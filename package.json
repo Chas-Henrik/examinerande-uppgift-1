@@ -1,0 +1,30 @@
+{
+  "name": "examinerande-uppgift-1",
+  "version": "1.0.0",
+  "description": "Målet med denna gruppuppgift är att designa och implementera två API\\:er som interagerar med en MongoDB-databas. Det ena API\\:et ska vara ett RESTful API, och det andra ska byggas med GraphQL.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:rest": "nodemon index-rest.js",
+    "dev:gql": "nodemon index-gql.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Chas-Henrik/examinerande-uppgift-1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/server": "^5.0.0",
+    "@as-integrations/express5": "^1.1.2",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "graphql": "^16.11.0",
+    "mongoose": "^8.18.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
