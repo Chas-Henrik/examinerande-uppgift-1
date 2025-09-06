@@ -56,7 +56,7 @@ const manufacturerSchema = new mongoose.Schema(
         trim: true,
         match: [
         /^(https?:\/\/)?([\w.-]+)+(:\d+)?(\/([\w/_-]+))*\/?$/,
-        "Ogiltig URL",
+        "Invalid URL",
         ],
     },
     description: {
