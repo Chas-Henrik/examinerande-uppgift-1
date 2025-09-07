@@ -21,7 +21,7 @@ export const updateProduct = async (id, productData) => {
 };
 
 export const patchProduct = async (id, productData) => {
-	return ProductModel.findByIdAndUpdate(id, productData, {
+	return ProductModel.findByIdAndUpdate(id, { $set: productData }, {
 		new: true,
 		runValidators: false,
         upsert: false  // Do not create a new document if it doesn't exist
