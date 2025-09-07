@@ -1,11 +1,13 @@
 import express from "express";
 import dotenv from "dotenv";
 import { connectDB } from "./db.js";
+import router from "./routes/products.js";
 
 dotenv.config();
 const app = express();
 
 app.use(express.json());
+app.use("/products", router);
 
 const PORT = process.env.PORT || 3000;
 
