@@ -6,7 +6,7 @@ export const resolvers = {
 		// products
         products: async (_p, { limit, page }) => {
 
-			//Skip = hoppa över X antal dokument (enkel paginering)
+			//offset = hoppa över X antal dokument (enkel paginering)
 			const offset = parseInt(page-1) * parseInt(limit);
 
 			return await ProductModel.find().limit(limit).skip(offset);
