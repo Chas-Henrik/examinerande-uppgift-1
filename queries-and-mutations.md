@@ -37,13 +37,145 @@ mutation {
 ### products
 
 ```graphql
-// add your query/mutation here
+query Products {
+  products {
+    amountInStock
+    category
+    createdAt
+    description
+    id
+    manufacturer {
+      address
+      contact {
+        email
+        name
+        phone
+      }
+      country
+      description
+      name
+      website
+    }
+    name
+    price
+    sku
+    updatedAt
+  }
+}
+
+mutation CreateProduct($input: CreateProductInput!) {
+  createProduct(input: $input) {
+    amountInStock
+    category
+    createdAt
+    description
+    id
+    manufacturer {
+      address
+      contact {
+        email
+        name
+        phone
+      }
+      country
+      description
+      name
+      website
+    }
+    name
+    price
+    sku
+    updatedAt
+  }
+}
+
+mutation Mutation($updateProductId: ID!, $input: CreateProductInput!) {
+  updateProduct(id: $updateProductId, input: $input) {
+    amountInStock
+    category
+    createdAt
+    description
+    id
+    manufacturer {
+      address
+      contact {
+        email
+        name
+        phone
+      }
+      country
+      description
+      name
+      website
+    }
+    name
+    price
+    sku
+    updatedAt
+  }
+}
+
+mutation Mutation($patchProductId: ID!, $input: PatchProductInput!) {
+  patchProduct(id: $patchProductId, input: $input) {
+    amountInStock
+    category
+    createdAt
+    description
+    id
+    manufacturer {
+      address
+      contact {
+        email
+        name
+        phone
+      }
+      country
+      description
+      name
+      website
+    }
+    name
+    price
+    sku
+    updatedAt
+  }
+}
+
 ```
 
 ### product(id: ID!)
 
 ```graphql
-// add your query/mutation here
+query Query($productId: ID!) {
+  product(id: $productId) {
+    id
+    name
+    price
+    sku
+    amountInStock
+    category
+    createdAt
+    description
+    manufacturer {
+      address
+      contact {
+        email
+        name
+        phone
+      }
+      country
+      description
+      name
+      website
+    }
+    updatedAt
+  }
+}
+
+mutation Mutation($deleteProductId: ID!) {
+  deleteProduct(id: $deleteProductId)
+}
+
 ```
 
 ### totalStockValue

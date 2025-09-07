@@ -39,7 +39,7 @@ export const typeDefs = /* GraphQL */ `
         phone: String!
     }
 
-    input UpdateContactInput {
+    input PatchContactInput {
         name: String
         email: String
         phone: String
@@ -54,13 +54,13 @@ export const typeDefs = /* GraphQL */ `
         contact: CreateContactInput!
     }
 
-    input UpdateManufacturerInput {
+    input PatchManufacturerInput {
         name: String
         country: String
         website: String
         description: String
         address: String
-        contact: UpdateContactInput
+        contact: PatchContactInput
     }
 
     input CreateProductInput {
@@ -73,19 +73,20 @@ export const typeDefs = /* GraphQL */ `
         amountInStock: Int!
     }
 
-    input UpdateProductInput {
+    input PatchProductInput {
         name: String
         sku: String
         description: String
         price: Float
         category: String
-        manufacturer: UpdateManufacturerInput
+        manufacturer: PatchManufacturerInput
         amountInStock: Int
     }
 
     type Mutation {
         createProduct(input: CreateProductInput!): Product!
-        updateProduct(id: ID!, input: UpdateProductInput!): Product!
+        updateProduct(id: ID!, input: CreateProductInput!): Product!
+        patchProduct(id: ID!, input: PatchProductInput!): Product!
         deleteProduct(id: ID!): Boolean!
     }
 `;
