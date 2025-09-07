@@ -29,7 +29,7 @@ export const typeDefs = /* GraphQL */ `
     }
 
     type Query {
-        products: [Product!]!
+        products(limit: Int = 10, page: Int = 1): [Product!]!
         product(id: ID!): Product
     }
 
