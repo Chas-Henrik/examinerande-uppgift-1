@@ -5,20 +5,20 @@ import { createProduct, findProducts, findProduct, updateProduct, patchProduct, 
 const router = express.Router();
 
 // POST /products
-router.post("/", async (request, response) => {
+router.post("/products", async (request, response) => {
 	console.log(request.body);
 	const createdProduct = await createProduct(request.body);
 	response.status(201).json(createdProduct);
 });
 
 // GET /products
-router.get("/", async (req, res) => {
+router.get("/products", async (req, res) => {
     const products = await findProducts();
     res.json(products);
 });
 
 // GET /products/:id
-router.get("/:id", async (req, res) => {
+router.get("/products/:id", async (req, res) => {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: "Invalid product ID" });
@@ -31,7 +31,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // PUT /products/:id
-router.put("/:id", async (req, res) => {
+router.put("/products/:id", async (req, res) => {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: "Invalid product ID" });
@@ -44,7 +44,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // PATCH /products/:id
-router.patch("/:id", async (req, res) => {
+router.patch("/products/:id", async (req, res) => {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: "Invalid product ID" });
@@ -57,7 +57,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // DELETE /products/:id
-router.delete("/:id", async (req, res) => {
+router.delete("/products/:id", async (req, res) => {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: "Invalid product ID" });
