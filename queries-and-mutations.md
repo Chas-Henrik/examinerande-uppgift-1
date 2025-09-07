@@ -63,8 +63,8 @@ query Products {
   }
 }
 
-mutation CreateProduct($input: CreateProductInput!) {
-  createProduct(input: $input) {
+mutation Mutation($input: CreateProductInput!) {
+  addProduct(input: $input) {
     amountInStock
     category
     createdAt

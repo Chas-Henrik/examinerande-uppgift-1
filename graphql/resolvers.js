@@ -20,8 +20,8 @@ export const resolvers = {
 	},
 
 	Mutation: {
-		// createProduct(input)
-		createProduct: async (_p, args) => {
+		// addProduct(input)
+		addProduct: async (_p, args) => {
 			return await ProductModel.create(args.input);
 		},
 
