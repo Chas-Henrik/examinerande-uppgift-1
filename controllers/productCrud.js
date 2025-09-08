@@ -11,10 +11,10 @@ export const getTotalStockValue = async () => {
 			}
 		}
 	]);
-	return totals.totalStockValue;
+	return totals.totalStockValue.toFixed(2);
 };
 
-export const getTotalStockValuePerManufacturer = async () => {
+export const getTotalStockValueByManufacturer = async () => {
 	const totals = await Product.aggregate([
 		{
 			$group: {
@@ -23,6 +23,7 @@ export const getTotalStockValuePerManufacturer = async () => {
 			}
 		}
 	]);
+	totals.forEach(item => item.totalStockValue = parseFloat(item.totalStockValue.toFixed(2)));
 	return totals;
 };
 

@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import { createProduct, findProducts, findProduct, 
     updateProduct, patchProduct, deleteProduct, 
-    getTotalStockValue, getTotalStockValuePerManufacturer, getLowStockProducts,
+    getTotalStockValue, getTotalStockValueByManufacturer, getLowStockProducts,
     getCriticalStockProducts, getManufacturers } from "../controllers/productCrud.js";
 
 const router = express.Router();
@@ -23,8 +23,8 @@ router.get("/products/total-stock-value", async (req, res) => {
 // GET /api/products/total-stock-value-by-manufacturer
 router.get("/products/total-stock-value-by-manufacturer", async (req, res) => {
     try {
-        const totalStockValuePerManufacturer = await getTotalStockValuePerManufacturer();
-        res.json(totalStockValuePerManufacturer);
+        const totalStockValueByManufacturer = await getTotalStockValueByManufacturer();
+        res.json(totalStockValueByManufacturer);
     } catch (error) {
         console.error("Error fetching total stock value per manufacturer:", error);
         res.status(500).json({ error: "Internal server error" });
