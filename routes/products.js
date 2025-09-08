@@ -1,6 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
-import { createProduct, findProducts, findProduct, 
+import { createProduct, findProductsWithFilterAndPagination, findProduct, 
     updateProduct, patchProduct, deleteProduct, 
     getTotalStockValue, getTotalStockValueByManufacturer, getLowStockProducts,
     getCriticalStockProducts, getManufacturers } from "../controllers/productCrud.js";
@@ -80,7 +80,21 @@ router.post("/products", async (request, response) => {
 // GET /products
 router.get("/products", async (req, res) => {
     try {
-        const products = await findProducts();
+        const { category, manufacturer, amountInStock, limit = 10, page = 1 } = req.query;
+
+        if (isNaN(limit) || isNaN(page) || limit <= 0 || page <= 0) {
+            return res.status(400).json({ error: "Invalid limit or page number" });
+        }
+
+        const filter = {};
+        if (category) filter.category = { $regex: category, $options: "i" };
+        if (manufacturer) filter['manufacturer.name'] = { $regex: manufacturer, $options: "i" };
+        if (amountInStock) filter.amountInStock = { $lte: Number(amountInStock) };
+        
+        // offset = skipping X number of documents (simple pagination)
+		const offset = parseInt(page-1) * parseInt(limit);
+
+        const products = await findProductsWithFilterAndPagination(filter, limit, offset);
         res.json(products);
     } catch (error) {
         console.error("Error fetching products:", error);

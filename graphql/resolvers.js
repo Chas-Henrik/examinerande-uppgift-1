@@ -15,7 +15,7 @@ export const resolvers = {
 				if (filter.amountInStock) q.amountInStock = { $lte: filter.amountInStock };
 			}
 
-			//offset = hoppa över X antal dokument (enkel paginering)
+			// offset = skipping X number of documents (simple pagination)
 			const offset = parseInt(page-1) * parseInt(limit);
 
 			return await Product.find(q).limit(limit).skip(offset);

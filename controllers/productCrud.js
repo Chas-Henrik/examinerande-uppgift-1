@@ -49,6 +49,10 @@ export const findProducts = async () => {
 	return Product.find();
 };
 
+export const findProductsWithFilterAndPagination = async (filter, limit, offset) => {
+	return Product.find(filter).limit(limit).skip(offset);
+};
+
 export const findProduct = async (id) => {
 	return Product.findById(id);
 };
