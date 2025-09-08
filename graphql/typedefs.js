@@ -28,9 +28,32 @@ export const typeDefs = /* GraphQL */ `
         updatedAt: String!
     }
 
+    type StockValueByManufacturer {
+        _id: String!
+        totalStockValue: Float!
+    }
+
+    type ManufacturerCriticalStockInfo {
+        name: String!
+        contact: Contact!
+    }
+
+    type ProductCriticalStockInfo {
+        id: ID!
+        name: String!
+        sku: String!
+        manufacturer: ManufacturerCriticalStockInfo!
+        amountInStock: Int!
+    }
+
     type Query {
         products(limit: Int = 10, page: Int = 1): [Product!]!
         product(id: ID!): Product
+        totalStockValue: Float
+        totalStockValueByManufacturer: [StockValueByManufacturer!]!
+        lowStockProducts: [Product!]!
+        criticalStockProducts: [ProductCriticalStockInfo!]!
+        manufacturers: [String!]!
     }
 
     input CreateContactInput {

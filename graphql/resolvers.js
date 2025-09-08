@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 
 export const resolvers = {
 	Query: {
+
+		// *** CRUD operations ***
+
 		// products
         products: async (_p, { limit, page }) => {
 
@@ -17,6 +20,47 @@ export const resolvers = {
 			if (!mongoose.isValidObjectId(id)) return null;
 			return Product.findById(id);
 		},
+
+		// *** Additional operations ***
+
+		totalStockValue: async () => {
+			const [totals] = await Product.aggregate([
+				{
+					$group: {
+						_id: null,
+						totalStockValue: { $sum: { $multiply: ["$price", "$amountInStock"] } }
+					}
+				}
+			]);
+			return totals.totalStockValue.toFixed(2);
+		},
+
+		totalStockValueByManufacturer: async () => {
+			const totals = await Product.aggregate([
+				{
+					$group: {
+						_id: "$manufacturer.name",
+						totalStockValue: { $sum: { $multiply: ["$price", "$amountInStock"] } }
+					}
+				}
+			]);
+			totals.forEach(item => item.totalStockValue = parseFloat(item.totalStockValue.toFixed(2)));
+			console.log(totals);
+			return totals;
+		},
+
+		lowStockProducts: async () => {
+			return await Product.find({ amountInStock: { $lt: 10 } });
+		},
+
+		criticalStockProducts: async () => {
+			return await Product.find({ amountInStock: { $lt: 5 } }).select("name sku amountInStock manufacturer.name manufacturer.contact.name manufacturer.contact.phone manufacturer.contact.email");
+		},
+
+		manufacturers: async () => {
+			return await Product.distinct("manufacturer.name");
+		}
+
 	},
 
 	Mutation: {
