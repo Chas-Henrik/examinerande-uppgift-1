@@ -1,14 +1,80 @@
 import express from "express";
 import mongoose from "mongoose";
-import { createProduct, findProducts, findProduct, updateProduct, patchProduct, deleteProduct } from "../controllers/productCrud.js";
+import { createProduct, findProducts, findProduct, 
+    updateProduct, patchProduct, deleteProduct, 
+    getTotalStockValue, getTotalStockValuePerManufacturer, getLowStockProducts,
+    getCriticalStockProducts, getManufacturers } from "../controllers/productCrud.js";
 
 const router = express.Router();
 
+// *** Additional endpoints ***
+
+// GET /api/products/total-stock-value
+router.get("/products/total-stock-value", async (req, res) => {
+    try {
+        const totalStockValue = await getTotalStockValue();
+        res.json({ totalStockValue });
+    } catch (error) {
+        console.error("Error fetching total stock value:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// GET /api/products/total-stock-value-by-manufacturer
+router.get("/products/total-stock-value-by-manufacturer", async (req, res) => {
+    try {
+        const totalStockValuePerManufacturer = await getTotalStockValuePerManufacturer();
+        res.json(totalStockValuePerManufacturer);
+    } catch (error) {
+        console.error("Error fetching total stock value per manufacturer:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// GET /api/products/low-stock
+router.get("/products/low-stock", async (req, res) => {
+    try {
+        const lowStockProducts = await getLowStockProducts(); // Default threshold is 10
+        res.json(lowStockProducts);
+    } catch (error) {
+        console.error("Error fetching low stock products:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// GET /api/products/critical-stock
+router.get("/products/critical-stock", async (req, res) => {
+    try {
+        const criticalStockProducts = await getCriticalStockProducts(5); // Default threshold is 5
+        res.json(criticalStockProducts);
+    } catch (error) {
+        console.error("Error fetching critical stock products:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// GET /api/manufacturers
+router.get("/manufacturers", async (req, res) => {
+    try {
+        const manufacturers = await getManufacturers();
+        res.json(manufacturers);
+    } catch (error) {
+        console.error("Error fetching manufacturers:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// *** CRUD endpoints ***
+
 // POST /products
 router.post("/products", async (request, response) => {
-	console.log(request.body);
-	const createdProduct = await createProduct(request.body);
-	response.status(201).json(createdProduct);
+    try {
+        const createdProduct = await createProduct(request.body);
+        response.status(201).json(createdProduct);
+    } catch (error) {
+        console.error("Error creating product:", error);
+        response.status(500).json({ error: "Internal server error" });
+    }
 });
 
 // GET /products
