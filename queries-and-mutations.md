@@ -63,84 +63,6 @@ query Products {
   }
 }
 
-mutation Mutation($input: CreateProductInput!) {
-  addProduct(input: $input) {
-    amountInStock
-    category
-    createdAt
-    description
-    id
-    manufacturer {
-      address
-      contact {
-        email
-        name
-        phone
-      }
-      country
-      description
-      name
-      website
-    }
-    name
-    price
-    sku
-    updatedAt
-  }
-}
-
-mutation Mutation($updateProductId: ID!, $input: CreateProductInput!) {
-  updateProduct(id: $updateProductId, input: $input) {
-    amountInStock
-    category
-    createdAt
-    description
-    id
-    manufacturer {
-      address
-      contact {
-        email
-        name
-        phone
-      }
-      country
-      description
-      name
-      website
-    }
-    name
-    price
-    sku
-    updatedAt
-  }
-}
-
-mutation Mutation($patchProductId: ID!, $input: PatchProductInput!) {
-  patchProduct(id: $patchProductId, input: $input) {
-    amountInStock
-    category
-    createdAt
-    description
-    id
-    manufacturer {
-      address
-      contact {
-        email
-        name
-        phone
-      }
-      country
-      description
-      name
-      website
-    }
-    name
-    price
-    sku
-    updatedAt
-  }
-}
-
 ```
 
 ### product(id: ID!)
@@ -170,10 +92,6 @@ query Query($productId: ID!) {
     }
     updatedAt
   }
-}
-
-mutation Mutation($deleteProductId: ID!) {
-  deleteProduct(id: $deleteProductId)
 }
 
 ```
@@ -213,17 +131,101 @@ mutation Mutation($deleteProductId: ID!) {
 ### addProduct
 
 ```graphql
-// add your query/mutation here
+mutation Mutation($input: CreateProductInput!) {
+  addProduct(input: $input) {
+    amountInStock
+    category
+    createdAt
+    description
+    id
+    manufacturer {
+      address
+      contact {
+        email
+        name
+        phone
+      }
+      country
+      description
+      name
+      website
+    }
+    name
+    price
+    sku
+    updatedAt
+  }
+}
+
 ```
 
 ### updateProduct
 
 ```graphql
-// add your query/mutation here
+mutation Mutation($updateProductId: ID!, $input: CreateProductInput!) {
+  updateProduct(id: $updateProductId, input: $input) {
+    amountInStock
+    category
+    createdAt
+    description
+    id
+    manufacturer {
+      address
+      contact {
+        email
+        name
+        phone
+      }
+      country
+      description
+      name
+      website
+    }
+    name
+    price
+    sku
+    updatedAt
+  }
+}
+
+```
+
+### patchProduct
+
+```graphql
+mutation Mutation($patchProductId: ID!, $input: PatchProductInput!) {
+  patchProduct(id: $patchProductId, input: $input) {
+    amountInStock
+    category
+    createdAt
+    description
+    id
+    manufacturer {
+      address
+      contact {
+        email
+        name
+        phone
+      }
+      country
+      description
+      name
+      website
+    }
+    name
+    price
+    sku
+    updatedAt
+  }
+}
+
 ```
 
 ### deleteProduct
 
 ```graphql
-// add your query/mutation here
+mutation Mutation($deleteProductId: ID!) {
+  deleteProduct(id: $deleteProductId)
+}
+
 ```
