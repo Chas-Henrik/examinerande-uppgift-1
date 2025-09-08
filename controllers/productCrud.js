@@ -1,9 +1,9 @@
-import ProductModel from "../models/product.js"
+import { Product } from "../models/product.js"
 
 // *** Additional operations ***
 
 export const getTotalStockValue = async () => {
-	const [totals] = await ProductModel.aggregate([
+	const [totals] = await Product.aggregate([
 		{
 			$group: {
 				_id: null,
@@ -15,7 +15,7 @@ export const getTotalStockValue = async () => {
 };
 
 export const getTotalStockValuePerManufacturer = async () => {
-	const totals = await ProductModel.aggregate([
+	const totals = await Product.aggregate([
 		{
 			$group: {
 				_id: "$manufacturer.name",
@@ -27,33 +27,33 @@ export const getTotalStockValuePerManufacturer = async () => {
 };
 
 export const getLowStockProducts = async (threshold = 10) => {
-	return ProductModel.find({ amountInStock: { $lt: threshold } });
+	return Product.find({ amountInStock: { $lt: threshold } });
 };
 
 export const getCriticalStockProducts = async (threshold = 5) => {
-	return ProductModel.find({ amountInStock: { $lt: threshold } }).select("name sku amountInStock manufacturer.name manufacturer.contact.name manufacturer.contact.phone manufacturer.contact.email");
+	return Product.find({ amountInStock: { $lt: threshold } }).select("name sku amountInStock manufacturer.name manufacturer.contact.name manufacturer.contact.phone manufacturer.contact.email");
 };
 
 export const getManufacturers = async () => {
-	return ProductModel.distinct("manufacturer.name");
+	return Product.distinct("manufacturer.name");
 };
 
 // *** CRUD operations ***
 
 export const createProduct = async (productData) => {
-	return ProductModel.create(productData);
+	return Product.create(productData);
 };
 
 export const findProducts = async () => {
-	return ProductModel.find();
+	return Product.find();
 };
 
 export const findProduct = async (id) => {
-	return ProductModel.findById(id);
+	return Product.findById(id);
 };
 
 export const updateProduct = async (id, productData) => {
-	return ProductModel.replaceOne({ _id: id }, productData, {
+	return Product.replaceOne({ _id: id }, productData, {
 		new: true,
 		runValidators: true,
 		upsert: false  // Do not create a new document if it doesn't exist
@@ -61,7 +61,7 @@ export const updateProduct = async (id, productData) => {
 };
 
 export const patchProduct = async (id, productData) => {
-	return ProductModel.findByIdAndUpdate(id, { $set: productData }, {
+	return Product.findByIdAndUpdate(id, { $set: productData }, {
 		new: true,
 		runValidators: false,
         upsert: false  // Do not create a new document if it doesn't exist
@@ -69,5 +69,5 @@ export const patchProduct = async (id, productData) => {
 };
 
 export const deleteProduct = async (id) => {
-    return ProductModel.findByIdAndDelete(id);
+    return Product.findByIdAndDelete(id);
 };

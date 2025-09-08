@@ -1,4 +1,4 @@
-import ProductModel from "../models/product.js";
+import { Product } from "../models/product.js";
 import mongoose from "mongoose";
 
 export const resolvers = {
@@ -9,26 +9,26 @@ export const resolvers = {
 			//offset = hoppa över X antal dokument (enkel paginering)
 			const offset = parseInt(page-1) * parseInt(limit);
 
-			return await ProductModel.find().limit(limit).skip(offset);
+			return await Product.find().limit(limit).skip(offset);
 		},
 
 		// product(id)
 		product: async (_p, { id }) => {
 			if (!mongoose.isValidObjectId(id)) return null;
-			return ProductModel.findById(id);
+			return Product.findById(id);
 		},
 	},
 
 	Mutation: {
 		// addProduct(input)
 		addProduct: async (_p, args) => {
-			return await ProductModel.create(args.input);
+			return await Product.create(args.input);
 		},
 
 		// updateProduct(id, input)
 		updateProduct: async (_p, { id, input }) => {
 			if (!mongoose.isValidObjectId(id)) return null;
-			const updatedProduct = await ProductModel.findOneAndReplace(
+			const updatedProduct = await Product.findOneAndReplace(
 				{ _id: id },
 				input,
 				{
@@ -43,7 +43,7 @@ export const resolvers = {
 		// patchProduct(id, input)
 		patchProduct: async (_p, { id, input }) => {
 			if (!mongoose.isValidObjectId(id)) return null;
-			return await ProductModel.findByIdAndUpdate(id, { $set: input }, {
+			return await Product.findByIdAndUpdate(id, { $set: input }, {
 				new: true,
 				runValidators: false,
 				upsert: false  // Do not create a new document if it doesn't exist
@@ -53,7 +53,7 @@ export const resolvers = {
 		// deleteProduct(id)
 		deleteProduct: async (_p, { id }) => {
 			if (!mongoose.isValidObjectId(id)) return false;
-			const res = await ProductModel.findByIdAndDelete(id);
+			const res = await Product.findByIdAndDelete(id);
 			return res ? true : false;
 		},
 	},
