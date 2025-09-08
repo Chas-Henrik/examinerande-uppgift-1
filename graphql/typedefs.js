@@ -46,8 +46,14 @@ export const typeDefs = /* GraphQL */ `
         amountInStock: Int!
     }
 
+	input ProductFilter {
+		category: String
+		manufacturer: String
+		amountInStock: Int
+	}
+
     type Query {
-        products(limit: Int = 10, page: Int = 1): [Product!]!
+        products(filter: ProductFilter, limit: Int = 10, page: Int = 1): [Product!]!
         product(id: ID!): Product
         totalStockValue: Float
         totalStockValueByManufacturer: [StockValueByManufacturer!]!

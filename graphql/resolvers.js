@@ -7,12 +7,18 @@ export const resolvers = {
 		// *** CRUD operations ***
 
 		// products
-        products: async (_p, { limit, page }) => {
+        products: async (_p, { filter, limit, page }) => {
+			const q = {};
+			if (filter) {
+				if (filter.category) q.category = new RegExp(filter.category, "i");
+				if (filter.manufacturer) q["manufacturer.name"] = new RegExp(filter.manufacturer, "i");
+				if (filter.amountInStock) q.amountInStock = { $lte: filter.amountInStock };
+			}
 
 			//offset = hoppa över X antal dokument (enkel paginering)
 			const offset = parseInt(page-1) * parseInt(limit);
 
-			return await Product.find().limit(limit).skip(offset);
+			return await Product.find(q).limit(limit).skip(offset);
 		},
 
 		// product(id)
