@@ -99,31 +99,84 @@ query Query($productId: ID!) {
 ### totalStockValue
 
 ```graphql
-// add your query/mutation here
+query Products {
+  totalStockValue
+}
+
 ```
 
 ### totalStockValueByManufacturer
 
 ```graphql
-// add your query/mutation here
+query Products {
+  totalStockValueByManufacturer {
+    _id
+    totalStockValue
+  }
+}
+
 ```
 
 ### lowStockProducts
 
 ```graphql
-// add your query/mutation here
+query Products {
+  lowStockProducts {
+    amountInStock
+    category
+    createdAt
+    description
+    id
+    manufacturer {
+      address
+      contact {
+        email
+        name
+        phone
+      }
+      country
+      description
+      name
+      website
+    }
+    name
+    price
+    sku
+    updatedAt
+  }
+}
+
 ```
 
 ### criticalStockProducts
 
 ```graphql
-// add your query/mutation here
+query Products {
+  criticalStockProducts {
+    amountInStock
+    id
+    manufacturer {
+      contact {
+        name
+        email
+        phone
+      }
+      name
+    }
+    name
+    sku
+  }
+}
+
 ```
 
 ### manufacturers
 
 ```graphql
-// add your query/mutation here
+query Products {
+  manufacturers
+}
+
 ```
 
 ## Mutations
