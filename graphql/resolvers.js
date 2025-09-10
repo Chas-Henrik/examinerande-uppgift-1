@@ -1,5 +1,6 @@
 import { Product } from "../models/product.js";
 import mongoose from "mongoose";
+import merge from 'lodash/merge.js';
 
 export const resolvers = {
 	Query: {
@@ -98,9 +99,16 @@ export const resolvers = {
 		// patchProduct(id, input)
 		patchProduct: async (_p, { id, input }) => {
 			if (!mongoose.isValidObjectId(id)) return null;
-			return await Product.findByIdAndUpdate(id, { $set: input }, {
+			
+			const existing = await Product.findById(id);
+			if (!existing) return null;
+
+			// Deep merge the existing product with the patch input
+			const mergedData = merge({}, existing.toObject(), input);
+
+			return await Product.findByIdAndUpdate(id, { $set: mergedData }, {
 				new: true,
-				runValidators: false,
+				runValidators: true,
 				upsert: false  // Do not create a new document if it doesn't exist
 			});
 		},
