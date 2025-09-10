@@ -1,4 +1,5 @@
 import { Product } from "../models/product.js"
+import merge from 'lodash/merge.js';
 
 // *** Additional operations ***
 
@@ -81,9 +82,16 @@ export const updateProduct = async (id, productData) => {
 };
 
 export const patchProduct = async (id, productData) => {
-	return Product.findByIdAndUpdate(id, { $set: productData }, {
+	
+	const existing = await Product.findById(id);
+	if (!existing) return null;
+
+	// Deep merge the existing product with the patch input
+	const mergedData = merge({}, existing.toObject(), productData);
+
+	return Product.findByIdAndUpdate(id, { $set: mergedData }, {
 		new: true,
-		runValidators: false,
+		runValidators: true,
         upsert: false  // Do not create a new document if it doesn't exist
 	});
 };
