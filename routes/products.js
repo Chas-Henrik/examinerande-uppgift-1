@@ -86,15 +86,7 @@ router.get("/products", async (req, res) => {
             return res.status(400).json({ error: "Invalid limit or page number" });
         }
 
-        const filter = {};
-        if (category) filter.category = { $regex: category, $options: "i" };
-        if (manufacturer) filter['manufacturer.name'] = { $regex: manufacturer, $options: "i" };
-        if (amountInStock) filter.amountInStock = { $lte: Number(amountInStock) };
-        
-        // offset = skipping X number of documents (simple pagination)
-		const offset = parseInt(page-1) * parseInt(limit);
-
-        const products = await findProductsWithFilterAndPagination(filter, limit, offset);
+        const products = await findProductsWithFilterAndPagination(category, manufacturer, parseInt(amountInStock), parseInt(limit), parseInt(page));
         res.json(products);
     } catch (error) {
         console.error("Error fetching products:", error);

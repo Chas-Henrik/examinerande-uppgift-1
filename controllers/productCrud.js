@@ -49,8 +49,23 @@ export const findProducts = async () => {
 	return Product.find();
 };
 
-export const findProductsWithFilterAndPagination = async (filter, limit, offset) => {
-	return Product.find(filter).limit(limit).skip(offset);
+export const findProductsWithFilterAndPagination = async (category, manufacturer, amountInStock, limit, page) => {
+	return await Product.aggregate([
+	// 1. Filter Stage
+	{
+		$match: {
+		...(category && { category: { $regex: category, $options: "i" } }),
+		...(manufacturer && { "manufacturer.name": { $regex: manufacturer, $options: "i" } }),
+		...(amountInStock && { amountInStock: { $lte: amountInStock } })
+		}
+	},
+
+	// 2. Skip Stage (for pagination)
+	{ $skip: (page - 1) * limit },
+
+	// 3. Limit Stage
+	{ $limit: limit }
+	])
 };
 
 export const findProduct = async (id) => {

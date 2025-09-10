@@ -8,17 +8,22 @@ export const resolvers = {
 
 		// products
         products: async (_p, { filter, limit, page }) => {
-			const q = {};
-			if (filter) {
-				if (filter.category) q.category = new RegExp(filter.category, "i");
-				if (filter.manufacturer) q["manufacturer.name"] = new RegExp(filter.manufacturer, "i");
-				if (filter.amountInStock) q.amountInStock = { $lte: filter.amountInStock };
-			}
+		return await Product.aggregate([
+			// 1. Filter Stage
+			{
+				$match: {
+				...(filter.category && { category: { $regex: filter.category, $options: "i" } }),
+				...(filter.manufacturer && { "manufacturer.name": { $regex: filter.manufacturer, $options: "i" } }),
+				...(filter.amountInStock && { amountInStock: { $lte: filter.amountInStock } })
+				}
+			},
 
-			// offset = skipping X number of documents (simple pagination)
-			const offset = parseInt(page-1) * parseInt(limit);
+			// 2. Skip Stage (for pagination)
+			{ $skip: (page - 1) * limit },
 
-			return await Product.find(q).limit(limit).skip(offset);
+			// 3. Limit Stage
+			{ $limit: limit }
+			])
 		},
 
 		// product(id)

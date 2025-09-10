@@ -37,8 +37,8 @@ mutation {
 ### products
 
 ```graphql
-query Products {
-  products {
+query Products($filter: ProductFilter, $limit: Int, $page: Int) {
+  products(filter: $filter, limit: $limit, page: $page) {
     amountInStock
     category
     createdAt
