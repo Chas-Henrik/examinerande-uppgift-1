@@ -65,6 +65,18 @@ query Products($filter: ProductFilter, $limit: Int, $page: Int) {
 
 ```
 
+```json
+{
+  "filter": {
+    "category": "meat",
+    "manufacturer": "Tulip",
+    "amountInStock": 20
+  },
+  "limit": 5,
+  "page": 1
+}
+```
+
 ### product(id: ID!)
 
 ```graphql
@@ -95,6 +107,13 @@ query Query($productId: ID!) {
 }
 
 ```
+
+```json
+{
+  "productId": "68be8063793d5b718b476ab0"
+}
+```
+
 
 ### totalStockValue
 
@@ -212,6 +231,32 @@ mutation Mutation($input: CreateProductInput!) {
 
 ```
 
+```json
+{
+  "input": {
+    "amountInStock": 45,
+    "category": "Meat Products",
+    "description": "Truffle 300g Salami",
+    "manufacturer": {
+      "address": "Box 4103, SE-422 04 Hisings Backa (Gothenburg), Sweden",
+      "contact": {
+        "email": "foods.se@danishcrown.com",
+        "name": "Mr Tulip",
+        "phone": "+46 (0)31-65 50 50"
+      },
+      "country": "Sweden",
+      "description": "Manufacturer of various meat products",
+      "name": "Tulip Food Company AB",
+      "website": "www.tulip.se"
+    },
+    "name": "Salami",
+    "price": 9.99,
+    "sku": "SAL-TRF-300G-REG-004"
+  }
+}
+
+```
+
 ### updateProduct
 
 ```graphql
@@ -239,6 +284,33 @@ mutation Mutation($updateProductId: ID!, $input: CreateProductInput!) {
     sku
     updatedAt
   }
+}
+
+```
+
+```json
+{
+  "input": {
+    "category": "Meat Products",
+    "description": "Truffle 300g Salami",
+    "manufacturer": {
+      "address": "Box 4103, SE-422 04 Hisings Backa (Gothenburg), Sweden",
+      "contact": {
+        "email": "foods.se@danishcrown.com",
+        "name": "Mr Tulip",
+        "phone": "+46 (0)31-65 50 50"
+      },
+      "country": "Sweden",
+      "description": "Manufacturer of various meat products",
+      "name": "Tulip Food Company AB",
+      "website": "www.tulip.se"
+    },
+    "name": "Salami",
+    "price": 8.99,
+    "sku": "SAL-TRF-300G-REG-004",
+    "amountInStock": 43
+  },
+  "updateProductId": "68c16510f372eae5ead06eb4"
 }
 
 ```
@@ -274,11 +346,36 @@ mutation Mutation($patchProductId: ID!, $input: PatchProductInput!) {
 
 ```
 
+```json
+{
+  "input": {
+    "price": 9.49,
+    "amountInStock": 23,
+    "manufacturer": {
+      "contact": {
+        "name": "Mrs Tulipa",
+        "phone": "+46 (0)31-65 50 80"
+      }
+    }
+  },
+  "patchProductId": "68c16510f372eae5ead06eb4"
+}
+
+```
+
+
 ### deleteProduct
 
 ```graphql
 mutation Mutation($deleteProductId: ID!) {
   deleteProduct(id: $deleteProductId)
+}
+
+```
+
+```json
+{
+  "deleteProductId": "68c16510f372eae5ead06eb4"
 }
 
 ```
