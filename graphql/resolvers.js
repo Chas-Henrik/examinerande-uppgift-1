@@ -13,9 +13,9 @@ export const resolvers = {
 			// 1. Filter Stage
 			{
 				$match: {
-				...(filter.category && { category: { $regex: filter.category, $options: "i" } }),
-				...(filter.manufacturer && { "manufacturer.name": { $regex: filter.manufacturer, $options: "i" } }),
-				...(filter.amountInStock && { amountInStock: { $lte: filter.amountInStock } })
+				...(filter && filter.category && { category: { $regex: filter.category, $options: "i" } }),
+				...(filter && filter.manufacturer && { "manufacturer.name": { $regex: filter.manufacturer, $options: "i" } }),
+				...(filter && filter.amountInStock && { amountInStock: { $lte: filter.amountInStock } })
 				}
 			},
 
