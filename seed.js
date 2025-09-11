@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { connectDB } from "./db.js";       // ditt connect-script
+import { connectDB } from "./db.js";      
 import { Product } from "./models/product.js";
-import mongoose from "mongoose";  // din modell
+import mongoose from "mongoose";  
 
 const N = 1000;
 
