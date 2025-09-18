@@ -17,10 +17,20 @@ export const resolvers = {
             from: "manufacturers",
             localField: "manufacturer",
             foreignField: "_id",
-            as: "manufacturerData",
+            as: "manufacturer",
           },
         },
-        { $unwind: "$manufacturerData" },
+        { $unwind: "$manufacturer" },
+        // Join contact data
+        {
+          $lookup: {
+            from: "contacts",
+            localField: "manufacturer.contact",
+            foreignField: "_id",
+            as: "manufacturer.contact",
+          },
+        },
+        { $unwind: "$manufacturer.contact" },
         // Filter
         {
           $match: {
@@ -30,7 +40,7 @@ export const resolvers = {
               }),
             ...(filter &&
               filter.manufacturer && {
-                "manufacturerData.name": {
+                "manufacturer.name": {
                   $regex: filter.manufacturer,
                   $options: "i",
                 },
@@ -50,6 +60,57 @@ export const resolvers = {
     // product(id)
     product: async (_p, { id }) => {
       if (!mongoose.isValidObjectId(id)) return null
+      return await Product.findById(id).populate({
+        path: 'manufacturer',
+        populate: {
+          path: 'contact' // assuming manufacturer.contact is a ref
+        }
+      });
+    },
+
+    // *** Additional operations ***
+
+    totalStockValue: async () => {
+      const [totals] = await Product.aggregate([
+        {
+          $group: {
+            _id: null,
+            totalStockValue: {
+              $sum: { $multiply: ["$price", "$amountInStock"] },
+            },
+          },
+        },
+      ])
+      return totals.totalStockValue.toFixed(2)
+    },
+
+    totalStockValueByManufacturer: async () => {
+      const totals = await Product.aggregate([
+        {
+          $lookup: {
+            from: "manufacturers",
+            localField: "manufacturer",
+            foreignField: "_id",
+            as: "manufacturer",
+          },
+        },
+        { $unwind: "$manufacturer" },
+        // Join contact data
+        {
+          $lookup: {
+            from: "contacts",
+            localField: "manufacturer.contact",
+            foreignField: "_id",
+            as: "manufacturer.contact",
+          },
+        },
+        { $unwind: "$manufacturer.contact" },
+        // Filter
+        {
+          $match: { _id: new mongoose.Types.ObjectId(id) },
+        },
+      ])
+
       return Product.findById(id)
     },
 
@@ -98,7 +159,12 @@ export const resolvers = {
     },
 
     lowStockProducts: async () => {
-      return await Product.find({ amountInStock: { $lt: 10 } })
+      return await Product.find({ amountInStock: { $lt: 10 } }).populate({
+        path: 'manufacturer',
+        populate: {
+          path: 'contact' // assuming manufacturer.contact is a ref
+        }
+      });
     },
 
     criticalStockProducts: async () => {
