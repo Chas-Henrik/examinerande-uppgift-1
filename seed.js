@@ -40,23 +40,19 @@ function buildProduct() {
 async function seedDB() {
   await connectDB();
 
-  // töm befintlig collection
   await Product.deleteMany({});
-  console.log("🧹 products rensad");
+  console.log("🧹 products cleared");
 
-  // generera produkter
   const products = Array.from({ length: N }, buildProduct);
 
   await Product.insertMany(products);
-  console.log(`🌱 ${N} produkter seedade!`);
+  console.log(`🌱 ${N} products added!`);
 
   await mongoose.disconnect();
-  console.log("👋 Klart & stängt");
+  console.log("👋 Done and closing");
 }
 
 seedDB().catch((err) => {
   console.error("❌ Seed fail:", err);
   process.exit(1);
 });
-
-// To run this script, use the command: node examinerande-uppgift-1/seed.js
