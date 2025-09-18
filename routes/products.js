@@ -4,6 +4,7 @@ import { createProduct, findProductsWithFilterAndPagination, findProduct,
     updateProduct, patchProduct, deleteProduct, 
     getTotalStockValue, getTotalStockValueByManufacturer, getLowStockProducts,
     getCriticalStockProducts, getManufacturers } from "../controllers/productCrud.js";
+import { ZodProductSchema } from "../validation/productSchema.js";
 
 const router = express.Router();
 
@@ -69,8 +70,18 @@ router.get("/manufacturers", async (req, res) => {
 // POST /products
 router.post("/products", async (request, response) => {
     try {
-        const createdProduct = await createProduct(request.body);
-        response.status(201).json(createdProduct);
+       // const createdProduct = await createProduct(request.body);
+        const safeResult = ZodProductSchema.safeParse(request.body);
+        if (!safeResult.success) {
+            return response.status(400).json({
+              message: "Validation error",
+              errors: safeResult.error.issues.map(i => ({
+                path: i.path.join("."),
+                message: i.message,
+              })),
+            });
+          }
+        response.status(201).json(safeResult);
     } catch (error) {
         console.error("Error creating product:", error);
         response.status(500).json({ error: "Internal server error" });
