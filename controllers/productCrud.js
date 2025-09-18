@@ -1,5 +1,6 @@
-import { Manufacturer } from "../models/manufacturer.js"
 import { Product } from "../models/product.js"
+import { Manufacturer } from "../models/manufacturer.js"
+import { Contact } from "../models/contact.js"
 import merge from "lodash/merge.js"
 
 // *** Additional operations ***
@@ -48,9 +49,16 @@ export const getLowStockProducts = async (threshold = 10) => {
 }
 
 export const getCriticalStockProducts = async (threshold = 5) => {
-  return Product.find({ amountInStock: { $lt: threshold } }).select(
-    "name sku amountInStock manufacturer.name manufacturer.contact.name manufacturer.contact.phone manufacturer.contact.email"
-  )
+  return Product.find({ amountInStock: { $lt: threshold } })
+    .select("name sku amountInStock manufacturer")
+    .populate({
+      path: "manufacturer",
+      select: "name contact",
+      populate: {
+        path: "contact",
+        select: "name email phone",
+      },
+    })
 }
 
 export const getManufacturers = async () => {

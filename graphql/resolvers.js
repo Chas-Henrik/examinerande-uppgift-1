@@ -1,7 +1,8 @@
-import { Product } from "../models/product.js";
-import mongoose from "mongoose";
-import merge from 'lodash/merge.js';
+import mongoose from "mongoose"
+import merge from "lodash/merge.js"
+import { Product } from "../models/product.js"
 import { Manufacturer } from "../models/manufacturer.js"
+import { Contact } from "../models/contact.js"
 
 export const resolvers = {
   Query: {
@@ -94,9 +95,16 @@ export const resolvers = {
     },
 
     criticalStockProducts: async () => {
-      return await Product.find({ amountInStock: { $lt: 5 } }).select(
-        "name sku amountInStock manufacturer.name manufacturer.contact.name manufacturer.contact.phone manufacturer.contact.email"
-      )
+      return await Product.find({ amountInStock: { $lt: 5 } })
+        .select("name sku amountInStock manufacturer")
+        .populate({
+          path: "manufacturer",
+          select: "name contact",
+          populate: {
+            path: "contact",
+            select: "name email phone",
+          },
+        })
     },
 
     manufacturers: async () => {
