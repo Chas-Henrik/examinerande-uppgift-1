@@ -91,52 +91,6 @@ export const resolvers = {
             from: "manufacturers",
             localField: "manufacturer",
             foreignField: "_id",
-            as: "manufacturer",
-          },
-        },
-        { $unwind: "$manufacturer" },
-        // Join contact data
-        {
-          $lookup: {
-            from: "contacts",
-            localField: "manufacturer.contact",
-            foreignField: "_id",
-            as: "manufacturer.contact",
-          },
-        },
-        { $unwind: "$manufacturer.contact" },
-        // Filter
-        {
-          $match: { _id: new mongoose.Types.ObjectId(id) },
-        },
-      ])
-
-      return Product.findById(id)
-    },
-
-    // *** Additional operations ***
-
-    totalStockValue: async () => {
-      const [totals] = await Product.aggregate([
-        {
-          $group: {
-            _id: null,
-            totalStockValue: {
-              $sum: { $multiply: ["$price", "$amountInStock"] },
-            },
-          },
-        },
-      ])
-      return totals.totalStockValue.toFixed(2)
-    },
-
-    totalStockValueByManufacturer: async () => {
-      const totals = await Product.aggregate([
-        {
-          $lookup: {
-            from: "manufacturers",
-            localField: "manufacturer",
-            foreignField: "_id",
             as: "manufacturerData",
           },
         },
