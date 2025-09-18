@@ -1,4 +1,3 @@
-import { times } from "lodash";
 import {z} from "zod";
 
 export const manufactureSchema = z.object({
@@ -10,5 +9,4 @@ export const manufactureSchema = z.object({
     manufacturer: manufactureSchema,
     amountInStock: z.number().min(0, "The stock cannot be negative"),
     timestamps: z.array(z.date()).min(1, "At least one timestamp is required")
-
 });
