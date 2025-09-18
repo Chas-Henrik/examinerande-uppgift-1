@@ -49,7 +49,7 @@ export const getLowStockProducts = async (threshold = 10) => {
 }
 
 export const getCriticalStockProducts = async (threshold = 5) => {
-  return Product.find({ amountInStock: { $lt: threshold } })
+  const products = await Product.find({ amountInStock: { $lt: threshold } })
     .select("name sku amountInStock manufacturer")
     .populate({
       path: "manufacturer",
@@ -59,6 +59,22 @@ export const getCriticalStockProducts = async (threshold = 5) => {
         select: "name email phone",
       },
     })
+
+  // Map to compact shape
+  return products.map((p) => ({
+    id: p._id,
+    name: p.name,
+    sku: p.sku,
+    amountInStock: p.amountInStock,
+    manufacturer: {
+      name: p.manufacturer?.name,
+      contact: {
+        name: p.manufacturer?.contact?.name,
+        email: p.manufacturer?.contact?.email,
+        phone: p.manufacturer?.contact?.phone,
+      },
+    },
+  }))
 }
 
 export const getManufacturers = async () => {
@@ -83,21 +99,28 @@ export const findProductsWithFilterAndPagination = async (
   page
 ) => {
   return await Product.aggregate([
-    // 1. Filter Stage
+    // Join manufacturer data
+    {
+      $lookup: {
+        from: "manufacturers",
+        localField: "manufacturer",
+        foreignField: "_id",
+        as: "manufacturerData",
+      },
+    },
+    { $unwind: "$manufacturerData" },
+    // Filter
     {
       $match: {
         ...(category && { category: { $regex: category, $options: "i" } }),
         ...(manufacturer && {
-          "manufacturer.name": { $regex: manufacturer, $options: "i" },
+          "manufacturerData.name": { $regex: manufacturer, $options: "i" },
         }),
         ...(amountInStock && { amountInStock: { $lte: amountInStock } }),
       },
     },
-
-    // 2. Skip Stage (for pagination)
+    // Pagination
     { $skip: (page - 1) * limit },
-
-    // 3. Limit Stage
     { $limit: limit },
   ])
 }

@@ -11,7 +11,17 @@ export const resolvers = {
     // products
     products: async (_p, { filter, limit, page }) => {
       return await Product.aggregate([
-        // 1. Filter Stage
+        // Join manufacturer data
+        {
+          $lookup: {
+            from: "manufacturers",
+            localField: "manufacturer",
+            foreignField: "_id",
+            as: "manufacturerData",
+          },
+        },
+        { $unwind: "$manufacturerData" },
+        // Filter
         {
           $match: {
             ...(filter &&
@@ -20,7 +30,7 @@ export const resolvers = {
               }),
             ...(filter &&
               filter.manufacturer && {
-                "manufacturer.name": {
+                "manufacturerData.name": {
                   $regex: filter.manufacturer,
                   $options: "i",
                 },
@@ -31,11 +41,8 @@ export const resolvers = {
               }),
           },
         },
-
-        // 2. Skip Stage (for pagination)
+        // Pagination
         { $skip: (page - 1) * limit },
-
-        // 3. Limit Stage
         { $limit: limit },
       ])
     },
