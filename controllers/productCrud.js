@@ -17,13 +17,24 @@ export const getTotalStockValue = async () => {
 
 export const getTotalStockValueByManufacturer = async () => {
 	const totals = await Product.aggregate([
-		{
-			$group: {
-				_id: "$manufacturer.name",
-				totalStockValue: { $sum: { $multiply: ["$price", "$amountInStock"] } }
-			}
-		}
-	]);
+    {
+      $lookup: {
+        from: "manufacturers",
+        localField: "manufacturer",
+        foreignField: "_id",
+        as: "manufacturerData",
+      },
+    },
+    { $unwind: "$manufacturerData" },
+    {
+      $group: {
+        _id: "$manufacturerData.name",
+        totalStockValue: {
+          $sum: { $multiply: ["$amountInStock", "$price"] },
+        },
+      },
+    },
+  ])
 	totals.forEach(item => item.totalStockValue = parseFloat(item.totalStockValue.toFixed(2)));
 	return totals;
 };
