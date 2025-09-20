@@ -1,6 +1,8 @@
 import { Product } from "../models/product.js";
 import mongoose from "mongoose";
 import merge from 'lodash/merge.js';
+import { productValidationSchema, patchProductValidationSchema } from "../validation/productSchema.js";
+
 
 export const resolvers = {
 	Query: {
@@ -78,12 +80,38 @@ export const resolvers = {
 	Mutation: {
 		// addProduct(input)
 		addProduct: async (_p, args) => {
+			const result = productValidationSchema.safeParse(args.input);
+			if (!result.success) {
+        throw new Error(JSON.stringify(
+					{ 
+                error: "Validation failed", 
+                details: result.error.issues.map(issue => ({
+                    field: issue.path.join("."), 
+                    message: issue.message       
+                })) 
+          }
+				));
+      }
 			return await Product.create(args.input);
 		},
 
 		// updateProduct(id, input)
 		updateProduct: async (_p, { id, input }) => {
 			if (!mongoose.isValidObjectId(id)) return null;
+
+			const result = productValidationSchema.safeParse(args.input);
+			if (!result.success) {
+        throw new Error(JSON.stringify(
+					{ 
+                error: "Validation failed", 
+                details: result.error.issues.map(issue => ({
+                    field: issue.path.join("."), 
+                    message: issue.message       
+                })) 
+          }
+				));
+      }
+
 			const updatedProduct = await Product.findOneAndReplace(
 				{ _id: id },
 				input,
@@ -102,6 +130,19 @@ export const resolvers = {
 			
 			const existing = await Product.findById(id);
 			if (!existing) return null;
+
+			const result = patchProductValidationSchema.safeParse(args.input);
+			if (!result.success) {
+        throw new Error(JSON.stringify(
+					{ 
+                error: "Validation failed", 
+                details: result.error.issues.map(issue => ({
+                    field: issue.path.join("."), 
+                    message: issue.message       
+                })) 
+          }
+				));
+      }
 
 			// Deep merge the existing product with the patch input
 			const mergedData = merge({}, existing.toObject(), input);

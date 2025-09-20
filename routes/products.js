@@ -4,6 +4,7 @@ import { createProduct, findProductsWithFilterAndPagination, findProduct,
     updateProduct, patchProduct, deleteProduct, 
     getTotalStockValue, getTotalStockValueByManufacturer, getLowStockProducts,
     getCriticalStockProducts, getManufacturers } from "../controllers/productCrud.js";
+import { productValidationSchema } from "../validation/productSchema.js";
 
 const router = express.Router();
 
@@ -67,13 +68,25 @@ router.get("/manufacturers", async (req, res) => {
 // *** CRUD endpoints ***
 
 // POST /products
-router.post("/products", async (request, response) => {
+router.post("/products", async (req, res) => {
     try {
-        const createdProduct = await createProduct(request.body);
-        response.status(201).json(createdProduct);
+        const result = productValidationSchema.safeParse(req.body);
+
+        if(!result.success) {
+            return res.status(400).json({
+                error: "Validation failed",
+                details: result.error.issues.map(issue => ({
+                    field: issue.path.join("."), 
+                    message: issue.message       
+                }))
+            });
+        }
+
+        const createdProduct = await createProduct(req.body);
+        res.status(201).json(createdProduct);
     } catch (error) {
         console.error("Error creating product:", error);
-        response.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
@@ -119,6 +132,18 @@ router.put("/products/:id", async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ error: "Invalid product ID" });
         }
+
+        const result = productValidationSchema.safeParse(req.body);
+        if (!result.success) {
+            return res.status(400).json({ 
+                error: "Validation failed", 
+                details: result.error.issues.map(issue => ({
+                    field: issue.path.join("."), 
+                    message: issue.message       
+                }))
+             });
+        }
+
         const updatedProduct = await updateProduct(id, req.body);
         if (!updatedProduct) {
             return res.status(404).json({ error: "Product not found" });
@@ -137,6 +162,20 @@ router.patch("/products/:id", async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ error: "Invalid product ID" });
         }
+
+        const productPatchValidationSchema = productValidationSchema.partial();
+
+        const result = productPatchValidationSchema.safeParse(req.body);
+        if (!result.success) {
+            return res.status(400).json({ 
+                error: "Validation failed", 
+                details: result.error.issues.map(issue => ({
+                    field: issue.path.join("."), 
+                    message: issue.message       
+                })) 
+            });
+        }
+
         const updatedProduct = await patchProduct(id, req.body);
         if (!updatedProduct) {
             return res.status(404).json({ error: "Product not found" });
