@@ -1,127 +1,154 @@
 import express from "express";
 import mongoose from "mongoose";
-import { createProduct, findProductsWithFilterAndPagination, findProduct, 
-    updateProduct, patchProduct, deleteProduct, 
-    getTotalStockValue, getTotalStockValueByManufacturer, getLowStockProducts,
-    getCriticalStockProducts, getManufacturers } from "../controllers/productCrud.js";
-import { ZodProductSchema } from "../validation/productSchema.js";
+import {
+  createProduct,
+  //   findProducts,
+  findProductsWithFilterAndPagination,
+  findProductById,
+  updateProduct,
+  patchProduct,
+  deleteProduct,
+  getTotalStockValue,
+  getTotalStockValueByManufacturer,
+  getLowStockProducts,
+  getCriticalStockProducts,
+  getManufacturers,
+} from "../controllers/productCrud.js"
+import { ZodProductSchema } from "../validation/productSchema.js"
 
-const router = express.Router();
+const router = express.Router()
 
 // *** Additional endpoints ***
 
 // GET /api/products/total-stock-value
 router.get("/products/total-stock-value", async (req, res) => {
-    try {
-        const totalStockValue = await getTotalStockValue();
-        res.json({ totalStockValue });
-    } catch (error) {
-        console.error("Error fetching total stock value:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-});
+  try {
+    const totalStockValue = await getTotalStockValue()
+    res.json({ totalStockValue })
+  } catch (error) {
+    console.error("Error fetching total stock value:", error)
+    res.status(500).json({ error: "Internal server error" })
+  }
+})
 
 // GET /api/products/total-stock-value-by-manufacturer
 router.get("/products/total-stock-value-by-manufacturer", async (req, res) => {
-    try {
-        const totalStockValueByManufacturer = await getTotalStockValueByManufacturer();
-        res.json(totalStockValueByManufacturer);
-    } catch (error) {
-        console.error("Error fetching total stock value per manufacturer:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-});
+  try {
+    const totalStockValueByManufacturer =
+      await getTotalStockValueByManufacturer()
+    res.json(totalStockValueByManufacturer)
+  } catch (error) {
+    console.error("Error fetching total stock value per manufacturer:", error)
+    res.status(500).json({ error: "Internal server error" })
+  }
+})
 
 // GET /api/products/low-stock
 router.get("/products/low-stock", async (req, res) => {
-    try {
-        const lowStockProducts = await getLowStockProducts(); // Default threshold is 10
-        res.json(lowStockProducts);
-    } catch (error) {
-        console.error("Error fetching low stock products:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-});
+  try {
+    const lowStockProducts = await getLowStockProducts() // Default threshold is 10
+    res.json(lowStockProducts)
+  } catch (error) {
+    console.error("Error fetching low stock products:", error)
+    res.status(500).json({ error: "Internal server error" })
+  }
+})
 
 // GET /api/products/critical-stock
 router.get("/products/critical-stock", async (req, res) => {
-    try {
-        const criticalStockProducts = await getCriticalStockProducts(5); // Default threshold is 5
-        res.json(criticalStockProducts);
-    } catch (error) {
-        console.error("Error fetching critical stock products:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-});
+  try {
+    const criticalStockProducts = await getCriticalStockProducts(5) // Default threshold is 5
+    res.json(criticalStockProducts)
+  } catch (error) {
+    console.error("Error fetching critical stock products:", error)
+    res.status(500).json({ error: "Internal server error" })
+  }
+})
 
 // GET /api/manufacturers
 router.get("/manufacturers", async (req, res) => {
-    try {
-        const manufacturers = await getManufacturers();
-        res.json(manufacturers);
-    } catch (error) {
-        console.error("Error fetching manufacturers:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-});
+  try {
+    const manufacturers = await getManufacturers()
+    res.json(manufacturers)
+  } catch (error) {
+    console.error("Error fetching manufacturers:", error)
+    res.status(500).json({ error: "Internal server error" })
+  }
+})
 
 // *** CRUD endpoints ***
 
 // POST /products
 router.post("/products", async (request, response) => {
-    try {
-       // const createdProduct = await createProduct(request.body);
-        const safeResult = ZodProductSchema.safeParse(request.body);
-        if (!safeResult.success) {
-            return response.status(400).json({
-              message: "Validation error",
-              errors: safeResult.error.issues.map(i => ({
-                path: i.path.join("."),
-                message: i.message,
-              })),
-            });
-          }
-        response.status(201).json(safeResult);
-    } catch (error) {
-        console.error("Error creating product:", error);
-        response.status(500).json({ error: "Internal server error" });
+  try {
+    // const createdProduct = await createProduct(request.body);
+    const safeResult = ZodProductSchema.safeParse(request.body)
+    if (!safeResult.success) {
+      return response.status(400).json({
+        message: "Validation error",
+        errors: safeResult.error.issues.map((i) => ({
+          path: i.path.join("."),
+          message: i.message,
+        })),
+      })
     }
-});
+    response.status(201).json(safeResult)
+  } catch (error) {
+    console.error("Error creating product:", error)
+    response.status(500).json({ error: "Internal server error" })
+  }
+})
 
 // GET /products
 router.get("/products", async (req, res) => {
-    try {
-        const { category, manufacturer, amountInStock, limit = 10, page = 1 } = req.query;
+  try {
+    const {
+      category,
+      manufacturer,
+      amountInStock,
+      limit = 10,
+      page = 1,
+    } = req.query
 
-        if (isNaN(limit) || isNaN(page) || limit <= 0 || page <= 0) {
-            return res.status(400).json({ error: "Invalid limit or page number" });
-        }
-
-        const products = await findProductsWithFilterAndPagination(category, manufacturer, parseInt(amountInStock), parseInt(limit), parseInt(page));
-        res.json(products);
-    } catch (error) {
-        console.error("Error fetching products:", error);
-        res.status(500).json({ error: "Internal server error" });
+    if (isNaN(limit) || isNaN(page) || limit <= 0 || page <= 0) {
+      return res.status(400).json({ error: "Invalid limit or page number" })
     }
-});
+
+    // const products = await findProducts()
+    const filteredAndPaginatedProducts =
+      await findProductsWithFilterAndPagination(
+        category,
+        manufacturer,
+        parseInt(amountInStock),
+        parseInt(limit),
+        parseInt(page)
+      )
+    console.log(filteredAndPaginatedProducts)
+    // res.json(products)
+    res.json(filteredAndPaginatedProducts)
+  } catch (error) {
+    console.error("Error fetching products:", error)
+    res.status(500).json({ error: "Internal server error" })
+  }
+})
 
 // GET /products/:id
 router.get("/products/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ error: "Invalid product ID" });
-        }
-        const product = await findProduct(id);
-        if (!product) {
-            return res.status(404).json({ error: "Product not found" });
-        }
-        res.json(product);
-    } catch (error) {
-        console.error("Error fetching product:", error);
-        res.status(500).json({ error: "Internal server error" });
+  try {
+    const { id } = req.params
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid product ID" })
     }
-});
+    const product = await findProductById(id)
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" })
+    }
+    res.json(product)
+  } catch (error) {
+    console.error("Error fetching product:", error)
+    res.status(500).json({ error: "Internal server error" })
+  }
+})
 
 // PUT /products/:id
 router.put("/products/:id", async (req, res) => {

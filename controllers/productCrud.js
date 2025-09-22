@@ -87,19 +87,15 @@ export const createProduct = async (productData) => {
   return Product.create(productData)
 }
 
-export const findProducts = async () => {
-  return Product.find()
-}
-
 export const findProductsWithFilterAndPagination = async (
   category,
-  manufacturer,
+  manufacturerName,
   amountInStock,
   limit,
   page
 ) => {
-  return await Product.aggregate([
-    // Join manufacturer data
+  // Step 1: Aggregate to get product IDs matching manufacturer name
+  const pipeline = [
     {
       $lookup: {
         from: "manufacturers",
@@ -109,23 +105,32 @@ export const findProductsWithFilterAndPagination = async (
       },
     },
     { $unwind: "$manufacturerData" },
-    // Filter
     {
       $match: {
         ...(category && { category: { $regex: category, $options: "i" } }),
-        ...(manufacturer && {
-          "manufacturerData.name": { $regex: manufacturer, $options: "i" },
+        ...(manufacturerName && {
+          "manufacturerData.name": { $regex: manufacturerName, $options: "i" },
         }),
-        ...(amountInStock && { amountInStock: { $lte: amountInStock } }),
+        ...(amountInStock && { amountInStock: { $gte: amountInStock } }),
       },
     },
-    // Pagination
     { $skip: (page - 1) * limit },
     { $limit: limit },
-  ])
+    { $project: { _id: 1 } },
+  ]
+
+  const ids = await Product.aggregate(pipeline).then((res) =>
+    res.map((r) => r._id)
+  )
+
+  // Step 2: Fetch full products with populate
+  return Product.find({ _id: { $in: ids } }).populate({
+    path: "manufacturer",
+    populate: { path: "contact" },
+  })
 }
 
-export const findProduct = async (id) => {
+export const findProductById = async (id) => {
   return Product.findById(id)
 }
 
