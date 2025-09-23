@@ -52,8 +52,17 @@ export const resolvers = {
           },
         },
         // Pagination
+        { $sort: { _id: -1 } },
         { $skip: (page - 1) * limit },
         { $limit: limit },
+     { $addFields: {
+        id: { $toString: "$_id" },
+        productId: { $toString: "$_id" },
+        "manufacturer.id": { $toString: "$manufacturer._id" },
+        "manufacturer.manufacturerId": { $toString: "$manufacturer._id" },
+        "manufacturer.contact.id": { $toString: "$manufacturer.contact._id" },
+        "manufacturer.contact.contactId": { $toString: "$manufacturer.contact._id" },
+      } },
       ])
     },
 
@@ -141,22 +150,69 @@ export const resolvers = {
 
   Mutation: {
     // addProduct(input)
-    addProduct: async (_p, args) => {
-      return await Product.create(args.input)
-    },
+    addProduct: async (_, { input }) => {
+    let manufacturerId = input.manufacturerId;
+
+    if (!manufacturerId && input.manufacturer) {
+      const m = input.manufacturer;
+
+      let contactId = m.contactId;
+      if (!contactId && m.contact) {
+        const createdContact = await Contact.create(m.contact);
+        contactId = createdContact._id;
+      }
+
+      const createdManufacturer = await Manufacturer.create({
+        name: m.name,
+        country: m.country,
+        website: m.website,
+        description: m.description,
+        address: m.address,
+        contact: contactId, 
+      });
+
+      manufacturerId = createdManufacturer._id;
+    }
+
+    if (!manufacturerId) {
+      throw new Error('Provide either manufacturerId or manufacturer.');
+    }
+
+    const created = await Product.create({
+      name: input.name,
+      sku: input.sku,
+      description: input.description,
+      price: input.price,
+      category: input.category,
+      amountInStock: input.amountInStock,
+      manufacturer: manufacturerId,
+    });
+
+
+    return Product.findById(created._id).populate({
+      path: 'manufacturer',
+      populate: { path: 'contact' },
+    });
+  },
 
     // updateProduct(id, input)
     updateProduct: async (_p, { id, input }) => {
       if (!mongoose.isValidObjectId(id)) return null
+      const { manufacturerId, ...rest } = input;
+       const replaceDoc = {
+    ...rest,
+    manufacturer: manufacturerId,
+  };
       const updatedProduct = await Product.findOneAndReplace(
         { _id: id },
-        input,
-        {
-          new: true,
-          runValidators: true,
-          upsert: false, // Do not create a new document if it doesn't exist
-        }
-      )
+        replaceDoc,
+         {
+        returnDocument: 'after', 
+        runValidators: true,
+        upsert: false,
+        timestamps: true,  
+      }
+      ).populate('manufacturer')
       return updatedProduct
     },
 
@@ -168,17 +224,23 @@ export const resolvers = {
       if (!existing) return null
 
       // Deep merge the existing product with the patch input
-      const mergedData = merge({}, existing.toObject(), input)
+     // const mergedData = merge({}, existing.toObject(), input)
+
+       const { manufacturerId, ...rest } = input;
+       const update = { ...rest };
+       if (typeof manufacturerId !== 'undefined') {
+       update.manufacturer = manufacturerId;
+       }
 
       return await Product.findByIdAndUpdate(
         id,
-        { $set: mergedData },
+        { $set: update },
         {
           new: true,
           runValidators: true,
           upsert: false, // Do not create a new document if it doesn't exist
         }
-      )
+      ).populate('manufacturer')
     },
 
     // deleteProduct(id)

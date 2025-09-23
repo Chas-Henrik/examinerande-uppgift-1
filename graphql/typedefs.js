@@ -1,12 +1,16 @@
 
 export const typeDefs = /* GraphQL */ `
     type Contact {
+        id: ID!
+        contactId: ID
         name: String!
         email: String!
         phone: String!
     }
 
     type Manufacturer {
+        id: ID!
+        manufacturerId: ID
         name: String!
         country: String!
         website: String
@@ -17,6 +21,7 @@ export const typeDefs = /* GraphQL */ `
 
     type Product {
         id: ID!
+        productId: ID
         name: String!
         sku: String!
         description: String
@@ -26,6 +31,7 @@ export const typeDefs = /* GraphQL */ `
         amountInStock: Int!
         createdAt: String!
         updatedAt: String!
+        manufacturerId: ID
     }
 
     type StockValueByManufacturer {
@@ -80,6 +86,7 @@ export const typeDefs = /* GraphQL */ `
         website: String
         description: String
         address: String!
+        contactId: ID
         contact: CreateContactInput!
     }
 
@@ -93,13 +100,24 @@ export const typeDefs = /* GraphQL */ `
     }
 
     input CreateProductInput {
-        name: String!
-        sku: String!
-        description: String
-        price: Float!
-        category: String
-        manufacturer: CreateManufacturerInput!
-        amountInStock: Int!
+          name: String!
+          sku: String!
+          description: String
+          price: Float!
+          category: String
+          amountInStock: Int!
+          manufacturerId: ID!
+          
+    }
+
+    input UpdateProductInput {
+     name: String!
+     sku: String!
+     description: String
+     price: Float!
+     category: String
+     amountInStock: Int!
+     manufacturerId: ID!   
     }
 
     input PatchProductInput {
@@ -110,11 +128,12 @@ export const typeDefs = /* GraphQL */ `
         category: String
         manufacturer: PatchManufacturerInput
         amountInStock: Int
+        manufacturerId: ID
     }
 
     type Mutation {
         addProduct(input: CreateProductInput!): Product!
-        updateProduct(id: ID!, input: CreateProductInput!): Product!
+        updateProduct(id: ID!, input: UpdateProductInput!): Product!
         patchProduct(id: ID!, input: PatchProductInput!): Product!
         deleteProduct(id: ID!): Boolean!
     }

@@ -205,27 +205,14 @@ query Products {
 ```graphql
 mutation Mutation($input: CreateProductInput!) {
   addProduct(input: $input) {
-    amountInStock
-    category
-    createdAt
-    description
-    id
     manufacturer {
-      address
-      contact {
-        email
-        name
-        phone
-      }
-      country
-      description
-      name
-      website
+      manufacturerId
     }
-    name
+    amountInStock
+    createdAt
     price
+    name
     sku
-    updatedAt
   }
 }
 
@@ -234,24 +221,13 @@ mutation Mutation($input: CreateProductInput!) {
 ```json
 {
   "input": {
-    "amountInStock": 45,
-    "category": "Meat Products",
-    "description": "Truffle 300g Salami",
-    "manufacturer": {
-      "address": "Box 4103, SE-422 04 Hisings Backa (Gothenburg), Sweden",
-      "contact": {
-        "email": "foods.se@danishcrown.com",
-        "name": "Mr Tulip",
-        "phone": "+46 (0)31-65 50 50"
-      },
-      "country": "Sweden",
-      "description": "Manufacturer of various meat products",
-      "name": "Tulip Food Company AB",
-      "website": "www.tulip.se"
-    },
     "name": "Salami",
+    "sku": "SAL-TRF-200G-RSG-504", <--- UNIKT
+    "description": "Truffle 300g Salami",
     "price": 9.99,
-    "sku": "SAL-TRF-300G-REG-004"
+    "category": "Meat Products",
+    "amountInStock": 45,
+    "manufacturerId": "ETT MANUFACTURER_ID SOM REDAN FINNS I DATABASEN"
   }
 }
 
@@ -260,57 +236,31 @@ mutation Mutation($input: CreateProductInput!) {
 ### updateProduct
 
 ```graphql
-mutation Mutation($updateProductId: ID!, $input: CreateProductInput!) {
+mutation Mutation($updateProductId: ID!, $input: UpdateProductInput!) {
   updateProduct(id: $updateProductId, input: $input) {
     amountInStock
-    category
     createdAt
-    description
-    id
-    manufacturer {
-      address
-      contact {
-        email
-        name
-        phone
-      }
-      country
-      description
-      name
-      website
-    }
-    name
     price
+    name
     sku
     updatedAt
   }
+}
 }
 
 ```
 
 ```json
-{
-  "input": {
-    "category": "Meat Products",
-    "description": "Truffle 300g Salami",
-    "manufacturer": {
-      "address": "Box 4103, SE-422 04 Hisings Backa (Gothenburg), Sweden",
-      "contact": {
-        "email": "foods.se@danishcrown.com",
-        "name": "Mr Tulip",
-        "phone": "+46 (0)31-65 50 50"
-      },
-      "country": "Sweden",
-      "description": "Manufacturer of various meat products",
-      "name": "Tulip Food Company AB",
-      "website": "www.tulip.se"
-    },
-    "name": "Salami",
-    "price": 8.99,
-    "sku": "SAL-TRF-300G-REG-004",
-    "amountInStock": 43
-  },
-  "updateProductId": "68c16510f372eae5ead06eb4"
+{  "updateProductId": "68cbf698690bf3e3fe0104ea",
+    "input": {
+    "name": "Test wireliseesase",
+    "sku": "PROX-WH-001",
+    "description": "testast.",
+    "price": 199.99,
+    "category": "Electronics",
+    "manufacturerId": "650fa12e4b1c2a3d8f1a9b77",
+    "amountInStock": 120
+  }
 }
 
 ```
@@ -321,44 +271,30 @@ mutation Mutation($updateProductId: ID!, $input: CreateProductInput!) {
 mutation Mutation($patchProductId: ID!, $input: PatchProductInput!) {
   patchProduct(id: $patchProductId, input: $input) {
     amountInStock
-    category
     createdAt
-    description
-    id
-    manufacturer {
-      address
-      contact {
-        email
-        name
-        phone
-      }
-      country
-      description
-      name
-      website
-    }
-    name
     price
+    name
     sku
     updatedAt
+    manufacturerId
   }
+}
 }
 
 ```
 
 ```json
 {
+  "patchProductId": "68cbf698690bf3e3fe0104ea",
   "input": {
-    "price": 9.49,
-    "amountInStock": 23,
-    "manufacturer": {
-      "contact": {
-        "name": "Mrs Tulipa",
-        "phone": "+46 (0)31-65 50 80"
-      }
-    }
-  },
-  "patchProductId": "68c16510f372eae5ead06eb4"
+    "name": "Gaming Laptop X15",
+    "sku": "LAPTOP-X15-2025",
+    "description": "High-performance gaming laptop with RTX 5090 GPU and Intel i11 CPU.",
+    "price": 2499.99,
+    "category": "Computers",
+    "amountInStock": 15,
+    "manufacturerId": "68cbf698690bf3e3fe01049c"
+  }
 }
 
 ```
