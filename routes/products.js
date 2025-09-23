@@ -217,15 +217,19 @@ router.patch("/products/:id", async (req, res) => {
   try {
     const { id } = req.params
     const { manufacturer } = req.body
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid product ID" })
     }
-    if (manufacturer && !mongoose.Types.ObjectId.isValid(manufacturer)) {
-      return res.status(400).json({ error: "Invalid manufacturer ID" })
-    }
-    const existingManufacturer = await getManufacturerById(manufacturer)
-    if (!existingManufacturer) {
-      return res.status(404).json({ error: "Manufacturer not found" })
+
+    if (manufacturer) {
+      if (!mongoose.Types.ObjectId.isValid(manufacturer)) {
+        return res.status(400).json({ error: "Invalid manufacturer ID" })
+      }
+      const existingManufacturer = await getManufacturerById(manufacturer)
+      if (!existingManufacturer) {
+        return res.status(404).json({ error: "Manufacturer not found" })
+      }
     }
 
     const updatedProduct = await patchProduct(id, req.body)
