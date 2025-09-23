@@ -77,8 +77,13 @@ export const resolvers = {
       }).lean();
       if(!productData) return null;
 
+      const manufacturer = productData.manufacturer
+    ? { ...productData.manufacturer, id: productData.manufacturer._id?.toString?.() }
+    : null;
+
       return {
         ...productData,
+        manufacturer,
         manufacturerId: productData.manufacturer?._id ?? productData.manufacturer ?? null
       }
     },
