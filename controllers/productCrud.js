@@ -131,7 +131,10 @@ export const findProductsWithFilterAndPagination = async (
 }
 
 export const findProductById = async (id) => {
-  return Product.findById(id)
+  return Product.findById(id).populate({
+    path: "manufacturer",
+    populate: { path: "contact" },
+  })
 }
 
 export const updateProduct = async (id, productData) => {
