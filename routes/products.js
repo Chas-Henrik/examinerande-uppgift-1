@@ -13,6 +13,7 @@ import {
   getLowStockProducts,
   getCriticalStockProducts,
   getManufacturers,
+  getManufacturerById,
 } from "../controllers/productCrud.js"
 import { ZodProductSchema } from "../validation/productSchema.js"
 
@@ -72,6 +73,24 @@ router.get("/manufacturers", async (req, res) => {
     res.json(manufacturers)
   } catch (error) {
     console.error("Error fetching manufacturers:", error)
+    res.status(500).json({ error: "Internal server error" })
+  }
+})
+
+// GET /api/manufacturers/:id
+router.get("/manufacturers/:id", async (req, res) => {
+  try {
+    const { id } = req.params
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid manufacturer ID" })
+    }
+    const manufacturer = await getManufacturerById(id)
+    if (!manufacturer) {
+      return res.status(404).json({ error: "Manufacturer not found" })
+    }
+    res.json(manufacturer)
+  } catch (error) {
+    console.error("Error fetching manufacturer:", error)
     res.status(500).json({ error: "Internal server error" })
   }
 })
@@ -152,39 +171,57 @@ router.get("/products/:id", async (req, res) => {
 
 // PUT /products/:id
 router.put("/products/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ error: "Invalid product ID" });
-        }
-        const updatedProduct = await updateProduct(id, req.body);
-        if (!updatedProduct) {
-            return res.status(404).json({ error: "Product not found" });
-        }
-        res.json(updatedProduct);
-    } catch (error) {
-        console.error("Error updating product:", error);
-        res.status(500).json({ error: "Internal server error" });
+  try {
+    const { id } = req.params
+    const { manufacturer } = req.body
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid product ID" })
     }
-});
+    if (manufacturer && !mongoose.Types.ObjectId.isValid(manufacturer)) {
+      return res.status(400).json({ error: "Invalid manufacturer ID" })
+    }
+    const existingManufacturer = await getManufacturerById(manufacturer)
+    if (!existingManufacturer) {
+      return res.status(404).json({ error: "Manufacturer not found" })
+    }
+
+    const updatedProduct = await updateProduct(id, req.body)
+    if (!updatedProduct) {
+      return res.status(404).json({ error: "Product not found" })
+    }
+    res.json(updatedProduct)
+  } catch (error) {
+    console.error("Error updating product:", error)
+    res.status(500).json({ error: "Internal server error" })
+  }
+})
 
 // PATCH /products/:id
 router.patch("/products/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ error: "Invalid product ID" });
-        }
-        const updatedProduct = await patchProduct(id, req.body);
-        if (!updatedProduct) {
-            return res.status(404).json({ error: "Product not found" });
-        }
-        res.json(updatedProduct);
-    } catch (error) {
-        console.error("Error patching product:", error);
-        res.status(500).json({ error: "Internal server error" });
+  try {
+    const { id } = req.params
+    const { manufacturer } = req.body
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid product ID" })
     }
-});
+    if (manufacturer && !mongoose.Types.ObjectId.isValid(manufacturer)) {
+      return res.status(400).json({ error: "Invalid manufacturer ID" })
+    }
+    const existingManufacturer = await getManufacturerById(manufacturer)
+    if (!existingManufacturer) {
+      return res.status(404).json({ error: "Manufacturer not found" })
+    }
+
+    const updatedProduct = await patchProduct(id, req.body)
+    if (!updatedProduct) {
+      return res.status(404).json({ error: "Product not found" })
+    }
+    res.json(updatedProduct)
+  } catch (error) {
+    console.error("Error patching product:", error)
+    res.status(500).json({ error: "Internal server error" })
+  }
+})
 
 // DELETE /products/:id
 router.delete("/products/:id", async (req, res) => {

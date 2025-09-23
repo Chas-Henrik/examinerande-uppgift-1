@@ -108,6 +108,10 @@ export const getManufacturers = async () => {
   return Manufacturer.distinct("name")
 }
 
+export const getManufacturerById = async (id) => {
+  return Manufacturer.findById(id).populate("contact")
+}
+
 // *** CRUD operations ***
 
 export const createProduct = async (productData) => {
@@ -165,6 +169,9 @@ export const findProductById = async (id) => {
 }
 
 export const updateProduct = async (id, productData) => {
+  const existing = await Product.findById(id)
+  if (!existing) return null
+
   return Product.replaceOne({ _id: id }, productData, {
     new: true,
     runValidators: true,
