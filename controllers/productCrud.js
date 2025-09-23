@@ -62,6 +62,7 @@ export const getLowStockProducts = async (threshold = 10) => {
   return products.map((p) => ({
     id: p._id,
     name: p.name,
+    sku: p.sku,
     amountInStock: p.amountInStock,
     manufacturer: {
       name: p.manufacturer?.name,
