@@ -52,7 +52,26 @@ export const getTotalStockValueByManufacturer = async () => {
 }
 
 export const getLowStockProducts = async (threshold = 10) => {
-  return Product.find({ amountInStock: { $lt: threshold } })
+  const products = await Product.find({
+    amountInStock: { $lt: threshold },
+  }).populate({
+    path: "manufacturer",
+    select: "name",
+    populate: { path: "contact" },
+  })
+  return products.map((p) => ({
+    id: p._id,
+    name: p.name,
+    amountInStock: p.amountInStock,
+    manufacturer: {
+      name: p.manufacturer?.name,
+      contact: {
+        name: p.manufacturer?.contact?.name,
+        email: p.manufacturer?.contact?.email,
+        phone: p.manufacturer?.contact?.phone,
+      },
+    },
+  }))
 }
 
 export const getCriticalStockProducts = async (threshold = 5) => {
