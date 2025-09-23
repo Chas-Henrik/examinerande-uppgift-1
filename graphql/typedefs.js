@@ -2,7 +2,6 @@
 export const typeDefs = /* GraphQL */ `
     type Contact {
         id: ID!
-        contactId: ID
         name: String!
         email: String!
         phone: String!
@@ -10,7 +9,6 @@ export const typeDefs = /* GraphQL */ `
 
     type Manufacturer {
         id: ID!
-        manufacturerId: ID
         name: String!
         country: String!
         website: String
@@ -21,7 +19,6 @@ export const typeDefs = /* GraphQL */ `
 
     type Product {
         id: ID!
-        productId: ID
         name: String!
         sku: String!
         description: String
