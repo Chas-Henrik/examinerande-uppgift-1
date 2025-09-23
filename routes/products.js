@@ -174,10 +174,26 @@ router.put("/products/:id", async (req, res) => {
   try {
     const { id } = req.params
     const { manufacturer } = req.body
+    const requiredFields = [
+      "name",
+      "sku",
+      "description",
+      "price",
+      "category",
+      "manufacturer",
+      "amountInStock",
+    ]
+    const missing = requiredFields.filter((f) => !(f in req.body))
+    if (missing.length > 0) {
+      return res
+        .status(400)
+        .json({ error: `Missing fields: ${missing.join(", ")}` })
+    }
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid product ID" })
     }
-    if (manufacturer && !mongoose.Types.ObjectId.isValid(manufacturer)) {
+    if (!mongoose.Types.ObjectId.isValid(manufacturer)) {
       return res.status(400).json({ error: "Invalid manufacturer ID" })
     }
     const existingManufacturer = await getManufacturerById(manufacturer)

@@ -172,7 +172,7 @@ export const updateProduct = async (id, productData) => {
   const existingProduct = await Product.findById(id)
   if (!existingProduct) return null
 
-  return Product.replaceOne({ _id: id }, productData, {
+  return Product.findByIdAndUpdate(id, productData, {
     new: true,
     runValidators: true,
     upsert: false, // Do not create a new document if it doesn't exist
