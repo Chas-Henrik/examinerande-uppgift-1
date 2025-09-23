@@ -203,16 +203,31 @@ query Products {
 ### addProduct
 
 ```graphql
+
 mutation Mutation($input: CreateProductInput!) {
   addProduct(input: $input) {
     manufacturer {
-      manufacturerId
+      id
+      contact {
+        email
+        name
+        phone
+      }
+      address
+      country
+      description
+      name
+      website
     }
     amountInStock
+    category
     createdAt
-    price
+    description
+    id
     name
+    price
     sku
+    updatedAt
   }
 }
 
@@ -236,16 +251,26 @@ mutation Mutation($input: CreateProductInput!) {
 ### updateProduct
 
 ```graphql
-mutation Mutation($updateProductId: ID!, $input: UpdateProductInput!) {
+mutation UpdateProduct($updateProductId: ID!, $input: UpdateProductInput!) {
   updateProduct(id: $updateProductId, input: $input) {
     amountInStock
     createdAt
-    price
+    id
+    manufacturer {
+      address
+      contact {
+        email
+        name
+        phone
+      }
+      country
+      name
+    }
     name
+    price
     sku
     updatedAt
   }
-}
 }
 
 ```
@@ -268,17 +293,26 @@ mutation Mutation($updateProductId: ID!, $input: UpdateProductInput!) {
 ### patchProduct
 
 ```graphql
-mutation Mutation($patchProductId: ID!, $input: PatchProductInput!) {
-  patchProduct(id: $patchProductId, input: $input) {
+mutation UpdateProduct($updateProductId: ID!, $input: UpdateProductInput!) {
+  updateProduct(id: $updateProductId, input: $input) {
     amountInStock
     createdAt
-    price
+    id
+    manufacturer {
+      address
+      contact {
+        email
+        name
+        phone
+      }
+      country
+      name
+    }
     name
+    price
     sku
     updatedAt
-    manufacturerId
   }
-}
 }
 
 ```

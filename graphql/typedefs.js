@@ -14,7 +14,7 @@ export const typeDefs = /* GraphQL */ `
         website: String
         description: String
         address: String!
-        contactId: ID
+        contact: Contact!
     }
 
     type Product {
@@ -24,11 +24,10 @@ export const typeDefs = /* GraphQL */ `
         description: String
         price: Float!
         category: String
-        manufacturerId: ID
+        manufacturer: Manufacturer!
         amountInStock: Int!
         createdAt: String!
-        updatedAt: String!
-        
+        updatedAt: String!   
     }
 
     type StockValueByManufacturer {

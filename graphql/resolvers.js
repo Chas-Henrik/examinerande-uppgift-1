@@ -67,26 +67,14 @@ export const resolvers = {
     },
 
     // product(id)
-    product: async (_p, { id }) => {
-      if (!mongoose.isValidObjectId(id)) return null
-      const productData = await Product.findById(id).populate({
-        path: 'manufacturer',
-        populate: {
-          path: 'contact' // assuming manufacturer.contact is a ref
-        }
-      }).lean();
-      if(!productData) return null;
-
-      const manufacturer = productData.manufacturer
-    ? { ...productData.manufacturer, id: productData.manufacturer._id?.toString?.() }
-    : null;
-
-      return {
-        ...productData,
-        manufacturer,
-        manufacturerId: productData.manufacturer?._id ?? productData.manufacturer ?? null
-      }
+ product: async (_p, { id }) => {
+      if (!mongoose.isValidObjectId(id)) return null;
+      return Product.findById(id).populate({
+        path: "manufacturer",
+        populate: { path: "contact" },
+      });
     },
+
 
     // *** Additional operations ***
 
@@ -223,7 +211,10 @@ export const resolvers = {
         upsert: false,
         timestamps: true,  
       }
-      ).populate('manufacturer')
+       ).populate({
+        path: 'manufacturer',
+        populate: {path: 'contact'}
+      })
       return updatedProduct
     },
 
@@ -251,7 +242,10 @@ export const resolvers = {
           runValidators: true,
           upsert: false, // Do not create a new document if it doesn't exist
         }
-      ).populate('manufacturer')
+      ).populate({
+        path: 'manufacturer',
+        populate: {path: 'contact'}
+      })
     },
 
     // deleteProduct(id)
