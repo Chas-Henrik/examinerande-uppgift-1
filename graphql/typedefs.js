@@ -14,7 +14,7 @@ export const typeDefs = /* GraphQL */ `
         website: String
         description: String
         address: String!
-        contact: Contact!
+        contactId: ID
     }
 
     type Product {
@@ -24,11 +24,11 @@ export const typeDefs = /* GraphQL */ `
         description: String
         price: Float!
         category: String
-        manufacturer: Manufacturer!
+        manufacturerId: ID
         amountInStock: Int!
         createdAt: String!
         updatedAt: String!
-        manufacturerId: ID
+        
     }
 
     type StockValueByManufacturer {
@@ -84,7 +84,6 @@ export const typeDefs = /* GraphQL */ `
         description: String
         address: String!
         contactId: ID
-        contact: CreateContactInput!
     }
 
     input PatchManufacturerInput {
@@ -93,7 +92,7 @@ export const typeDefs = /* GraphQL */ `
         website: String
         description: String
         address: String
-        contact: PatchContactInput
+        contactId: ID
     }
 
     input CreateProductInput {
@@ -123,7 +122,6 @@ export const typeDefs = /* GraphQL */ `
         description: String
         price: Float
         category: String
-        manufacturer: PatchManufacturerInput
         amountInStock: Int
         manufacturerId: ID
     }
