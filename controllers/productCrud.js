@@ -36,6 +36,13 @@ export const getTotalStockValueByManufacturer = async () => {
         },
       },
     },
+    {
+      $project: {
+        _id: 0,
+        manufacturer: "$_id",
+        totalStockValue: 1,
+      },
+    },
   ])
   totals.forEach(
     (item) =>
