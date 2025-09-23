@@ -69,12 +69,18 @@ export const resolvers = {
     // product(id)
     product: async (_p, { id }) => {
       if (!mongoose.isValidObjectId(id)) return null
-      return await Product.findById(id).populate({
+      const productData = await Product.findById(id).populate({
         path: 'manufacturer',
         populate: {
           path: 'contact' // assuming manufacturer.contact is a ref
         }
-      });
+      }).lean();
+      if(!productData) return null;
+
+      return {
+        ...productData,
+        manufacturerId: productData.manufacturer?._id ?? productData.manufacturer ?? null
+      }
     },
 
     // *** Additional operations ***
