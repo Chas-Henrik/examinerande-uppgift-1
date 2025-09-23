@@ -108,6 +108,10 @@ export const getManufacturers = async () => {
   return Manufacturer.distinct("name")
 }
 
+export const getManufacturerById = async (id) => {
+  return Manufacturer.findById(id).populate("contact")
+}
+
 // *** CRUD operations ***
 
 export const createProduct = async (productData) => {
