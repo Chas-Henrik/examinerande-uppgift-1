@@ -98,12 +98,25 @@ router.get("/manufacturers/:id", async (req, res) => {
 // *** CRUD endpoints ***
 
 // POST /products
-router.post("/products", async (request, response) => {
+router.post("/products", async (req, res) => {
   try {
-    // const createdProduct = await createProduct(request.body);
-    const safeResult = ZodProductSchema.safeParse(request.body)
+    const requiredFields = [
+      "name",
+      "sku",
+      "price",
+      "manufacturer",
+      "amountInStock",
+    ]
+    const missing = requiredFields.filter((f) => !(f in req.body))
+    if (missing.length > 0) {
+      return res
+        .status(400)
+        .json({ error: `Missing fields: ${missing.join(", ")}` })
+    }
+
+    const safeResult = ZodProductSchema.safeParse(req.body)
     if (!safeResult.success) {
-      return response.status(400).json({
+      return res.status(400).json({
         message: "Validation error",
         errors: safeResult.error.issues.map((i) => ({
           path: i.path.join("."),
@@ -111,10 +124,11 @@ router.post("/products", async (request, response) => {
         })),
       })
     }
-    response.status(201).json(safeResult)
+    const createdProduct = await createProduct(safeResult.data)
+    res.status(201).json(createdProduct)
   } catch (error) {
     console.error("Error creating product:", error)
-    response.status(500).json({ error: "Internal server error" })
+    res.status(500).json({ error: "Internal server error" })
   }
 })
 
