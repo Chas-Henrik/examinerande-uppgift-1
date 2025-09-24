@@ -100,6 +100,7 @@ router.get("/manufacturers/:id", async (req, res) => {
 // POST /products
 router.post("/products", async (req, res) => {
   try {
+    const { manufacturer } = req.body
     const requiredFields = [
       "name",
       "sku",
@@ -112,6 +113,13 @@ router.post("/products", async (req, res) => {
       return res
         .status(400)
         .json({ error: `Missing fields: ${missing.join(", ")}` })
+    }
+    if (!mongoose.Types.ObjectId.isValid(manufacturer)) {
+      return res.status(400).json({ error: "Invalid manufacturer ID" })
+    }
+    const existingManufacturer = await getManufacturerById(manufacturer)
+    if (!existingManufacturer) {
+      return res.status(404).json({ error: "Manufacturer not found" })
     }
 
     const safeResult = ZodProductSchema.safeParse(req.body)
