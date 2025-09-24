@@ -224,7 +224,19 @@ router.put("/products/:id", async (req, res) => {
       return res.status(404).json({ error: "Manufacturer not found" })
     }
 
-    const updatedProduct = await updateProduct(id, req.body)
+      const safeResult = ZodProductSchema.safeParse(req.body)
+    if (!safeResult.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: safeResult.error.issues.map((i) => ({
+          path: i.path.join("."),
+          message: i.message,
+        })),
+      })
+    }
+    
+
+    const updatedProduct = await updateProduct(id, safeResult.data)
     if (!updatedProduct) {
       return res.status(404).json({ error: "Product not found" })
     }
@@ -258,7 +270,18 @@ router.patch("/products/:id", async (req, res) => {
       }
     }
 
-    const updatedProduct = await patchProduct(id, req.body)
+      const safeResult = ZodProductSchema.safeParse(req.body)
+    if (!safeResult.success) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: safeResult.error.issues.map((i) => ({
+          path: i.path.join("."),
+          message: i.message,
+        })),
+      })
+    }
+
+    const updatedProduct = await patchProduct(id, safeResult.data)
     if (!updatedProduct) {
       return res.status(404).json({ error: "Product not found" })
     }
