@@ -137,7 +137,7 @@ router.post("/products", async (req, res) => {
   } catch (error) {
     console.error("Error creating product:", error)
     if (error.code === 11000 && error.keyPattern?.sku) {
-      return res.status(400).json({ error: "SKU must be unique" })
+      return res.status(409).json({ error: "SKU must be unique" })
     }
     res.status(500).json({ error: "Internal server error" })
   }
@@ -244,7 +244,7 @@ router.put("/products/:id", async (req, res) => {
   } catch (error) {
     console.error("Error updating product:", error)
     if (error.code === 11000 && error.keyPattern?.sku) {
-      return res.status(400).json({ error: "SKU must be unique" })
+      return res.status(409).json({ error: "SKU must be unique" })
     }
     res.status(500).json({ error: "Internal server error" })
   }
@@ -289,7 +289,7 @@ router.patch("/products/:id", async (req, res) => {
   } catch (error) {
     console.error("Error patching product:", error)
     if (error.code === 11000 && error.keyPattern?.sku) {
-      return res.status(400).json({ error: "SKU must be unique" })
+      return res.status(409).json({ error: "SKU must be unique" })
     }
     res.status(500).json({ error: "Internal server error" })
   }
