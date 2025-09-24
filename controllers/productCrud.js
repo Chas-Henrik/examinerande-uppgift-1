@@ -169,10 +169,10 @@ export const findProductById = async (id) => {
 }
 
 export const updateProduct = async (id, productData) => {
-  const existing = await Product.findById(id)
-  if (!existing) return null
+  const existingProduct = await Product.findById(id)
+  if (!existingProduct) return null
 
-  return Product.replaceOne({ _id: id }, productData, {
+  return Product.findByIdAndUpdate(id, productData, {
     new: true,
     runValidators: true,
     upsert: false, // Do not create a new document if it doesn't exist
@@ -180,11 +180,11 @@ export const updateProduct = async (id, productData) => {
 }
 
 export const patchProduct = async (id, productData) => {
-  const existing = await Product.findById(id)
-  if (!existing) return null
+  const existingProduct = await Product.findById(id)
+  if (!existingProduct) return null
 
-  // Deep merge the existing product with the patch input
-  const mergedData = merge({}, existing.toObject(), productData)
+  // Deep merge the existingProduct product with the patch input
+  const mergedData = merge({}, existingProduct.toObject(), productData)
 
   return Product.findByIdAndUpdate(
     id,
