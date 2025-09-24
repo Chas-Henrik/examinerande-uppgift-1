@@ -184,6 +184,7 @@ export const resolvers = {
       throw new Error('Provide either manufacturerId or manufacturer.');
     }
 
+   try {
     const created = await Product.create({
       name: input.name,
       sku: input.sku,
@@ -194,11 +195,16 @@ export const resolvers = {
       manufacturer: manufacturerId,
     });
 
-
     return Product.findById(created._id).populate({
       path: 'manufacturer',
       populate: { path: 'contact' },
     });
+  } catch (err) {
+    if (err && err.code === 11000) {
+      throw new Error('SKU must be unique');
+    }
+    throw err;
+  }
   },
 
     // updateProduct(id, input)

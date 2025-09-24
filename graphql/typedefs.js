@@ -102,7 +102,6 @@ export const typeDefs = /* GraphQL */ `
           category: String
           amountInStock: Int!
           manufacturerId: ID!
-          
     }
 
     input UpdateProductInput {
