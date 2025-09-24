@@ -191,9 +191,7 @@ router.put("/products/:id", async (req, res) => {
     const requiredFields = [
       "name",
       "sku",
-      "description",
       "price",
-      "category",
       "manufacturer",
       "amountInStock",
     ]
