@@ -111,6 +111,13 @@ export const resolvers = {
             },
           },
         },
+        {
+      $project: {
+      _id: 0,
+      manufacturer: "$_id",
+      totalStockValue: { $round: ["$totalStockValue", 2] },
+    },
+  }
       ])
       totals.forEach(
         (item) =>

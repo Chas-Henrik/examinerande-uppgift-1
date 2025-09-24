@@ -31,7 +31,7 @@ export const typeDefs = /* GraphQL */ `
     }
 
     type StockValueByManufacturer {
-        _id: String!
+        manufacturer: String!
         totalStockValue: Float!
     }
 
